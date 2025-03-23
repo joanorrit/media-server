@@ -4,9 +4,9 @@ services:
     container_name: jellyfin
     user: 1000:984
     volumes:
-      - /Users/joanorrit/src/media-server:/config
-      - /Users/joanorrit/Movies/Movies:/movies:ro
-      - /Users/joanorrit/Movies/TvShows:/tv-shows:ro
+      - ${JELLYFIN_CONFIG}:/config
+      - ${JELLYFIN_MOVIES}:/movies:ro
+      - ${JELLYFIN_TV_SHOWS}:/tv-shows:ro
     networks:
       - proxy-network
     ports:
@@ -23,8 +23,8 @@ services:
     - TZ=Etc/UTC
     - AUTO_UPDATE=true
     volumes:
-      - /Users/joanorrit/src/media-server/jackett/config:/config
-      - /Users/joanorrit/src/media-server/jackett/downloads:/downloads
+      - ${JACKETT_CONFIG}:/config
+      - ${JACKET_DOWNLOADS}:/downloads
     networks:
       - proxy-network
     ports:
@@ -38,32 +38,15 @@ services:
       - PGID=984
       - TZ=Etc/UTC
     volumes:
-      - /Users/joanorrit/src/media-server/transmission/config:/config
-      - /Users/joanorrit/src/media-server/transmission/downloads:/downloads
-      - /Users/joanorrit/src/media-server/transmission/watch:/watch
+      - ${TRANSMISSION_CONFIG}:/config
+      - ${TRANSMISSION_DOWNLOADS}:/downloads
+      - ${TRANSMISSION_WATCH}:/watch
     networks:
       - proxy-network
     ports:
       - 9091:9091
       - 51413:51413
       - 51413:51413/udp
-    restart: unless-stopped
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - WEBUI_PORT=8080
-      - TORRENTING_PORT=6881
-    volumes:
-      - /Users/joanorrit/src/media-server/qbittorrent/config:/config
-      - /Users/joanorrit/src/media-server/qbittorrent/downloads:/downloads
-    ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
     restart: unless-stopped
   nginx:
     image: nginx:alpine
@@ -73,8 +56,7 @@ services:
       - PGID=984
       - TZ=Etc/UTC
     volumes:
-      - /Users/joanorrit/src/media-server/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - /Users/joanorrit/src/media-server/nginx/data/:/data/
+      - ${NGINX_CONFIG}:/etc/nginx/conf.d/default.conf:ro
     networks:
       - proxy-network
     ports:
